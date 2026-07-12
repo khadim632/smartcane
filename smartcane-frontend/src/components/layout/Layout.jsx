@@ -13,7 +13,13 @@ const PAGE_TITLES = {
   '/profil':        'Mon profil',
   '/notifications': 'Notifications',
   '/admin':         'Administration',
+  '/ma-canne':      'Ma canne',
 }
+
+// Pages accessibles selon le rôle
+const PAGES_PORTEUR = ['/ma-canne', '/profil']
+const PAGES_PROCHE  = ['/dashboard', '/carte', '/historique', '/alertes', '/proches', '/geofences', '/notifications', '/profil']
+const PAGES_ADMIN   = [...PAGES_PROCHE, '/admin', '/ma-canne']
 
 export default function Layout() {
   const { utilisateur, chargement } = useAuth()
@@ -33,6 +39,18 @@ export default function Layout() {
 
   if (!utilisateur) return <Navigate to="/login" replace />
 
+  // Redirection selon le rôle si l'utilisateur tente d'accéder à une page non autorisée
+  const pagesAutorisees = utilisateur.role === 'admin'
+    ? PAGES_ADMIN
+    : utilisateur.role === 'porteur'
+    ? PAGES_PORTEUR
+    : PAGES_PROCHE
+
+  if (!pagesAutorisees.includes(location.pathname)) {
+    const pageDefaut = utilisateur.role === 'porteur' ? '/ma-canne' : '/dashboard'
+    return <Navigate to={pageDefaut} replace />
+  }
+
   return (
     <div className="flex min-h-screen bg-cream-100">
       <Sidebar />
@@ -47,7 +65,6 @@ export default function Layout() {
             </p>
           </div>
           <div className="flex items-center gap-3">
-            {/* Cloche */}
             <button className="relative w-9 h-9 rounded-xl hover:bg-cream-200 flex items-center justify-center transition-colors">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="w-5 h-5 text-gray-500">
                 <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
@@ -55,11 +72,7 @@ export default function Layout() {
               </svg>
               <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white" />
             </button>
-
-            {/* Séparateur */}
             <div className="w-px h-6 bg-gray-200" />
-
-            {/* Utilisateur */}
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-xl bg-amber-400 flex items-center justify-center text-white font-bold text-xs shadow-amber">
                 {utilisateur?.prenom?.[0]}{utilisateur?.nom?.[0]}
