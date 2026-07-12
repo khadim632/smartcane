@@ -21,7 +21,7 @@ const app = express()
 app.use(helmet())
 
 // ---- CORS strict : uniquement le frontend autorisé ----
-const originesAutorisees = (process.env.FRONTEND_URL || 'https://smartcane-i2z4njxbw-khadim-ndaos-projects.vercel.app').split(',')
+const originesAutorisees = (process.env.FRONTEND_URL || 'https://smartcane-nine.vercel.app').split(',')
 app.use(cors({
   origin: (origin, callback) => {
     // Autorise les appels sans origin (Postman, curl, applis mobile)
