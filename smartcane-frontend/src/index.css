@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-warm-50 text-gray-800 font-sans antialiased;
+  }
+  * { box-sizing: border-box; }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary-600 text-white px-5 py-2.5 rounded-xl font-semibold text-sm
+           hover:bg-primary-700 active:scale-95
+           transition-all duration-150 shadow-sm;
+  }
+  .btn-secondary {
+    @apply bg-white text-gray-700 px-4 py-2 rounded-xl font-medium text-sm
+           border border-gray-200 hover:bg-warm-50 transition-colors duration-150 shadow-sm;
+  }
+  .btn-accent {
+    @apply bg-accent-500 text-white px-5 py-2.5 rounded-xl font-semibold text-sm
+           hover:bg-accent-600 transition-all duration-150 shadow-sm;
+  }
+  .input {
+    @apply w-full px-4 py-2.5 border border-warm-200 rounded-xl text-sm bg-white
+           placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-400
+           focus:border-transparent transition-shadow duration-150;
+  }
+  .card {
+    @apply bg-white rounded-2xl shadow-card border border-warm-100;
+  }
+  .badge-urgent  { @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-red-100   text-red-700; }
+  .badge-moyen   { @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700; }
+  .badge-faible  { @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700; }
+  .badge-green   { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100  text-green-800; }
+  .badge-red     { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100    text-red-700; }
+  .badge-yellow  { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100  text-amber-800; }
+  .badge-blue    { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-sky-100    text-sky-700; }
+  .badge-primary { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-700; }
+}
