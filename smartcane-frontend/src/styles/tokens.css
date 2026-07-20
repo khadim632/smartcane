@@ -1,0 +1,63 @@
+:root {
+  /* ---- Couleurs ---- */
+  --ink: #101B2D;          /* texte principal, surfaces sombres */
+  --ink-soft: #3A4A63;     /* texte secondaire */
+  --canvas: #F4F6F5;       /* fond de page */
+  --surface: #FFFFFF;      /* cartes */
+  --line: #DCE2E0;         /* traits fins */
+  --line-soft: #EAEEEC;
+
+  --signal: #16938C;       /* teal — accent primaire, "ping" */
+  --signal-dim: #E4F2F1;
+  --amber: #C97A1A;        /* alertes moyennes (batterie, bluetooth) */
+  --amber-dim: #FBF0DF;
+  --coral: #C4432F;        /* alertes critiques (sos, chute, obstacle, eau) */
+  --coral-dim: #FBE9E5;
+
+  /* ---- Typographie ---- */
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-body: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+
+  /* ---- Rayon / ombre ---- */
+  --radius: 14px;
+  --radius-sm: 8px;
+  --shadow-card: 0 1px 2px rgba(16, 27, 45, 0.04), 0 8px 24px -12px rgba(16, 27, 45, 0.12);
+}
+
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; }
+
+body {
+  margin: 0;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+a { color: inherit; }
+
+button, input, select, textarea { font-family: inherit; font-size: inherit; }
+
+:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 2px;
+}
+
+.mono { font-family: var(--font-mono); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
