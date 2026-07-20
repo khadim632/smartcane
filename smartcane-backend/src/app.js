@@ -17,6 +17,11 @@ const errorHandler    = require('./middlewares/errorHandler')
 
 const app = express()
 
+// ---- Necessaire derriere le proxy de Render (et tout hebergeur similaire) pour que
+// express-rate-limit et req.ip lisent la vraie IP du visiteur via X-Forwarded-For.
+// "1" = on fait confiance au premier proxy en amont (celui de Render), pas plus loin.
+app.set('trust proxy', 1)
+
 // ---- Sécurité HTTP ----
 app.use(helmet())
 
