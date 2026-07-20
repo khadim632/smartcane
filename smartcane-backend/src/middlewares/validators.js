@@ -40,7 +40,7 @@ const validatePosition = [
 // ---- Alertes ----
 const validateAlerte = [
   body('canne_id').isInt({ min: 1 }).withMessage('canne_id invalide'),
-  body('type').isIn(['sos','chute','immobilite','batterie_faible','deconnexion_bluetooth'])
+  body('type').isIn(['sos','chute','immobilite','batterie_faible','deconnexion_bluetooth','obstacle','eau'])
     .withMessage('Type d\'alerte invalide'),
   body('latitude').optional().isFloat({ min: -90, max: 90 }).withMessage('Latitude invalide'),
   body('longitude').optional().isFloat({ min: -180, max: 180 }).withMessage('Longitude invalide')

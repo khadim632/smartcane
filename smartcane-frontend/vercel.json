@@ -1,8 +1,0 @@
-{
-  "rewrites": [
-    {
-      "source": "/api/:path*",
-      "destination": "https://smartcane-1g0a.onrender.com/api/:path*"
-    }
-  ]
-} 

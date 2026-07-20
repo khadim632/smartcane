@@ -1,4 +1,4 @@
-const { Suivi, Utilisateur } = require('../models');
+const { Suivi, Utilisateur, Canne } = require('../models');
 
 async function listerSuivis(req, res, next) {
   try {
@@ -8,7 +8,10 @@ async function listerSuivis(req, res, next) {
     const suivis = await Suivi.findAll({
       where,
       include: [
-        { model: Utilisateur, as: 'porteur', attributes: ['id', 'nom', 'prenom', 'email'] },
+        {
+          model: Utilisateur, as: 'porteur', attributes: ['id', 'nom', 'prenom', 'email'],
+          include: [{ model: Canne, as: 'cannes', attributes: ['id', 'numero_serie', 'niveau_batterie', 'etat_bluetooth'] }]
+        },
         { model: Utilisateur, as: 'proche', attributes: ['id', 'nom', 'prenom', 'email'] }
       ]
     });

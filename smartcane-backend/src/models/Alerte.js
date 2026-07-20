@@ -5,7 +5,7 @@ const Alerte = sequelize.define('Alerte', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   canne_id: { type: DataTypes.INTEGER, allowNull: false },
   type: {
-    type: DataTypes.ENUM('sos', 'chute', 'immobilite', 'batterie_faible', 'deconnexion_bluetooth'),
+    type: DataTypes.ENUM('sos', 'chute', 'immobilite', 'batterie_faible', 'deconnexion_bluetooth', 'obstacle', 'eau'),
     allowNull: false
   },
   message: { type: DataTypes.STRING(255) },
