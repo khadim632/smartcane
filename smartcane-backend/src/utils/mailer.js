@@ -7,7 +7,10 @@ const transporter = nodemailer.createTransport({
   auth: {
     user: process.env.GMAIL_USER,
     pass: process.env.GMAIL_APP_PASSWORD // mot de passe d'application, pas le mot de passe du compte
-  }
+  },
+  connectionTimeout: 10000, // 10s max pour etablir la connexion SMTP
+  greetingTimeout: 10000,
+  socketTimeout: 15000
 });
 
 async function envoyerEmailReinitialisation(destinataire, lienReinitialisation) {

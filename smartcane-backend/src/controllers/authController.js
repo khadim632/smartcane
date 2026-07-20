@@ -135,9 +135,14 @@ async function forgotPassword(req, res, next) {
     await utilisateur.save();
 
     const lien = `${process.env.FRONTEND_URL}/reset-password?token=${tokenBrut}&email=${encodeURIComponent(email)}`;
-    await envoyerEmailReinitialisation(email, lien);
 
-    return res.json(reponseGenerique);
+    // On repond immediatement : l'envoi d'email ne doit jamais faire attendre
+    // le frontend (SMTP peut etre lent ou bloque par l'hebergeur).
+    res.json(reponseGenerique);
+
+    envoyerEmailReinitialisation(email, lien).catch((err) => {
+      console.error('Echec envoi email de reinitialisation :', err.message);
+    });
   } catch (err) {
     next(err);
   }
