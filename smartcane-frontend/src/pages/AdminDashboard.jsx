@@ -54,11 +54,11 @@ function Stats() {
 function Utilisateurs() {
   const [users, setUsers] = useState([])
   const [role, setRole] = useState('')
+  const [edition, setEdition] = useState(null) // utilisateur en cours d'édition
 
   const charger = useCallback(() => adminApi.users(role || undefined).then(({ data }) => setUsers(data)), [role])
   useEffect(() => { charger() }, [charger])
 
-  async function changerRole(id, nouveauRole) { await adminApi.modifierUser(id, { role: nouveauRole }); charger() }
   async function supprimer(id) {
     if (!confirm('Supprimer ce compte définitivement ?')) return
     await adminApi.supprimerUser(id); charger()
@@ -76,25 +76,139 @@ function Utilisateurs() {
         </select>
       </div>
       <table>
-        <thead><tr><th>Nom</th><th>Email</th><th>Rôle</th><th>Inscrit le</th><th></th></tr></thead>
+        <thead><tr><th>Nom</th><th>Email</th><th>Téléphone</th><th>Rôle</th><th>Inscrit le</th><th></th></tr></thead>
         <tbody>
           {users.map((u) => (
             <tr key={u.id}>
               <td>{u.prenom} {u.nom}</td>
               <td className="mono">{u.email}</td>
-              <td>
-                <select value={u.role} onChange={(e) => changerRole(u.id, e.target.value)} style={{ padding: '4px 8px', borderRadius: 6, border: '1px solid var(--line)' }}>
-                  <option value="porteur">Porteur</option>
-                  <option value="proche">Proche</option>
-                  <option value="admin">Admin</option>
-                </select>
-              </td>
+              <td>{u.telephone || '—'}</td>
+              <td><span className="badge badge--muted">{u.role}</span></td>
               <td>{formatDate(u.date_creation)}</td>
-              <td><button className="btn btn--danger btn--sm" onClick={() => supprimer(u.id)}>Supprimer</button></td>
+              <td style={{ display: 'flex', gap: 6 }}>
+                <button className="btn btn--ghost btn--sm" onClick={() => setEdition(u)}>Modifier</button>
+                <button className="btn btn--danger btn--sm" onClick={() => supprimer(u.id)}>Supprimer</button>
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
+
+      {edition && (
+        <ModifierUtilisateurModal
+          utilisateur={edition}
+          onClose={() => setEdition(null)}
+          onSaved={() => { setEdition(null); charger() }}
+        />
+      )}
+    </div>
+  )
+}
+
+function ModifierUtilisateurModal({ utilisateur, onClose, onSaved }) {
+  const [form, setForm] = useState({
+    nom: utilisateur.nom || '',
+    prenom: utilisateur.prenom || '',
+    telephone: utilisateur.telephone || '',
+    role: utilisateur.role
+  })
+  const [etape, setEtape] = useState('edition') // 'edition' | 'confirmation'
+  const [enregistrement, setEnregistrement] = useState(false)
+  const [erreur, setErreur] = useState('')
+
+  const CHAMPS = [
+    { cle: 'prenom', label: 'Prénom' },
+    { cle: 'nom', label: 'Nom' },
+    { cle: 'telephone', label: 'Téléphone' },
+    { cle: 'role', label: 'Rôle' }
+  ]
+  const ROLE_LABEL_LOCAL = { porteur: 'Porteur', proche: 'Proche', admin: 'Administrateur' }
+
+  const changements = CHAMPS.filter((c) => (form[c.cle] || '') !== (utilisateur[c.cle] || ''))
+
+  function passerEnConfirmation(e) {
+    e.preventDefault()
+    if (changements.length === 0) { onClose(); return }
+    setEtape('confirmation')
+  }
+
+  async function confirmer() {
+    setEnregistrement(true)
+    setErreur('')
+    try {
+      await adminApi.modifierUser(utilisateur.id, form)
+      onSaved()
+    } catch (err) {
+      setErreur(err.response?.data?.message || 'Erreur lors de l\'enregistrement')
+      setEnregistrement(false)
+    }
+  }
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal" onClick={(e) => e.stopPropagation()}>
+        {etape === 'edition' ? (
+          <>
+            <h3>Modifier {utilisateur.prenom} {utilisateur.nom}</h3>
+            <p className="modal__sub">{utilisateur.email}</p>
+            <form onSubmit={passerEnConfirmation}>
+              <div className="field field--row">
+                <div className="field" style={{ flex: 1 }}>
+                  <label>Prénom</label>
+                  <input value={form.prenom} onChange={(e) => setForm({ ...form, prenom: e.target.value })} />
+                </div>
+                <div className="field" style={{ flex: 1 }}>
+                  <label>Nom</label>
+                  <input value={form.nom} onChange={(e) => setForm({ ...form, nom: e.target.value })} />
+                </div>
+              </div>
+              <div className="field">
+                <label>Téléphone</label>
+                <input value={form.telephone} onChange={(e) => setForm({ ...form, telephone: e.target.value })} />
+              </div>
+              <div className="field">
+                <label>Rôle</label>
+                <select value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}>
+                  <option value="porteur">Porteur</option>
+                  <option value="proche">Proche</option>
+                  <option value="admin">Administrateur</option>
+                </select>
+              </div>
+              <div className="modal__actions">
+                <button type="button" className="btn btn--ghost" onClick={onClose}>Annuler</button>
+                <button type="submit" className="btn btn--primary">Continuer</button>
+              </div>
+            </form>
+          </>
+        ) : (
+          <>
+            <h3>Confirmer les modifications</h3>
+            <p className="modal__sub">Vérifie les changements avant de les enregistrer.</p>
+
+            {erreur && <div className="error-text">{erreur}</div>}
+
+            <ul className="diff-list">
+              {changements.map((c) => (
+                <li key={c.cle}>
+                  <span className="diff-label">{c.label}</span>
+                  <span className="diff-old">{(c.cle === 'role' ? ROLE_LABEL_LOCAL[utilisateur[c.cle]] : utilisateur[c.cle]) || '(vide)'}</span>
+                  →{' '}
+                  <span className="diff-new">{(c.cle === 'role' ? ROLE_LABEL_LOCAL[form[c.cle]] : form[c.cle]) || '(vide)'}</span>
+                </li>
+              ))}
+            </ul>
+
+            <div className="modal__actions">
+              <button type="button" className="btn btn--ghost" onClick={() => setEtape('edition')} disabled={enregistrement}>
+                Revenir en arrière
+              </button>
+              <button type="button" className="btn btn--primary" onClick={confirmer} disabled={enregistrement}>
+                {enregistrement ? 'Enregistrement…' : 'Confirmer et enregistrer'}
+              </button>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   )
 }
