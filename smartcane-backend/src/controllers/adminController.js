@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt')
 const { Utilisateur, Canne, Alerte, QrToken } = require('../models')
 const QRCode = require('qrcode')
 const crypto = require('crypto')
+const { getPublicAppUrl } = require('../utils/urls')
 
 // ===== STATS =====
 async function getStats(req, res, next) {
@@ -152,7 +153,7 @@ async function getQrAdmin(req, res, next) {
       })
     }
 
-    const url = `${process.env.FRONTEND_URL}/reclamer?token=${qrToken.token}&serie=${canne.numero_serie}`
+    const url = `${getPublicAppUrl()}/reclamer?token=${qrToken.token}&serie=${canne.numero_serie}`
     const qrDataUrl = await QRCode.toDataURL(url, { width: 300, margin: 2, color: { dark: '#3a5c27' } })
 
     return res.json({ qrCode: qrDataUrl, url, numero_serie: canne.numero_serie })

@@ -4,6 +4,7 @@ const { Op } = require('sequelize');
 const { Utilisateur, RefreshToken } = require('../models');
 const { genererAccessToken, genererRefreshToken, verifierRefreshToken } = require('../utils/jwt');
 const { envoyerEmailReinitialisation } = require('../utils/mailer');
+const { getPublicAppUrl } = require('../utils/urls');
 
 async function register(req, res, next) {
   try {
@@ -134,7 +135,7 @@ async function forgotPassword(req, res, next) {
     utilisateur.reset_password_expire = new Date(Date.now() + 30 * 60 * 1000); // valable 30 minutes
     await utilisateur.save();
 
-    const lien = `${process.env.FRONTEND_URL}/reset-password?token=${tokenBrut}&email=${encodeURIComponent(email)}`;
+    const lien = `${getPublicAppUrl()}/reset-password?token=${tokenBrut}&email=${encodeURIComponent(email)}`;
 
     // On repond immediatement : l'envoi d'email ne doit jamais faire attendre
     // le frontend (SMTP peut etre lent ou bloque par l'hebergeur).

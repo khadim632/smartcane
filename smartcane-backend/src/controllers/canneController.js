@@ -1,6 +1,7 @@
 const QRCode = require('qrcode')
 const crypto = require('crypto')
 const { Canne, QrToken, Utilisateur } = require('../models')
+const { getPublicAppUrl } = require('../utils/urls')
 
 // ---- Voir une canne (proche/porteur) ----
 async function getCanne(req, res, next) {
@@ -42,7 +43,7 @@ async function getQrCode(req, res, next) {
     })
 
     // Le QR encode une URL que le porteur ouvrira sur son téléphone
-    const url = `${process.env.FRONTEND_URL}/reclamer?token=${token}&serie=${canne.numero_serie}`
+    const url = `${getPublicAppUrl()}/reclamer?token=${token}&serie=${canne.numero_serie}`
     const qrDataUrl = await QRCode.toDataURL(url, { width: 300, margin: 2 })
 
     return res.json({
